@@ -10,9 +10,12 @@
                 <div class="alert alert-danger">{{msg}}{{#if url}},<a href="{{url}}" target="_blank">点击跳转</a>{{/if}}</div>
             {{/if}}
         </div>
-        <label for="id_email">登录名:</label>
-        <div id="id_email">
-            <input id="username" name="username" value="{{form.username}}" class="form-control border" placeholder="用户名" type="text" data-required>
+        <label for="id_username">登录名:</label>
+        <div id="id_username">
+            <input id="username" maxlength="18" class="form-control border" name="username" value="{{form.username}}"
+                   placeholder="用户名"
+                   type="text" data-required="" data-conditional="username" data-description="username"
+                   data-describedby="message">
         </div>
         <label for="id_password">密码:</label>
         <div id="id_password">
@@ -20,7 +23,7 @@
         </div>
         <div class="checkbox">
             <label>
-                <input type="checkbox" name="rememberMe"> 记住登录？
+                <input id="rememberMe" type="checkbox" name="rememberMe"> 记住登录？
             </label>
         </div>
 
@@ -28,11 +31,11 @@
             <input id="submit" type="submit" class="btn btn-success border" value="登录 Use it">
 
             <div class="/forgot">
-                <a href="register">
+                <a href="/register">
                     注册
                 </a>
-                <a href="/forgotPass">
-                    忘记密码
+                <a href="/login/findPass">
+                    找回密码
                 </a>
             </div>
         </div>
@@ -52,7 +55,15 @@
                 eachInvalidField: function () {
                     $(this).closest('div').removeClass('has-success').addClass('has-error');
                 },
+                conditional: {
+                    username: function () {
+                        return /^[a-z][a-z_0-9]{4,18}$/i.test($(this).val());
+                    }
+                },
                 description: {
+                    username: {
+                        conditional: '<div class="alert alert-danger">字母/字母+数字组合,5-18位</div>'
+                    },
                     message: {
                         required: '<div class="alert alert-danger">请先输入用户名/密码再进行登录操作</div>'
                     }
@@ -60,24 +71,34 @@
             });
             setRememberMe();
         })
+        var msgChecked = false;
         function clearMsg(){
             var msgDiv = $('#message');
-            if(msgDiv.html()!=""){
-                msgDiv.removeClass('has-error').addClass('has-success');
-                msgDiv.html('');
+            msgDiv.removeClass('has-error').addClass('has-success');
+            msgDiv.html('');
+            msgChecked = false;
+        }
+
+        function checkMsg(){
+            var msgDiv = $('#message');
+            if((!msgChecked)&&msgDiv.html()!=""){
+                setTimeout(clearMsg,5000);
+                msgChecked = true;
             }
         }
-        setTimeout(clearMsg,5000);
+        setInterval(checkMsg,1000);
+
         function setRememberMe(){
             var rememberMe = $.cookie('rememberMe');
             if(rememberMe != undefined){
                 var cookieD = JSON.parse(rememberMe)
                 if(cookieD.rememberMe=="on"){
+                    $("#rememberMe").attr("checked","checked");
                     $("#username").val(cookieD.username);
                     $("#password").val(cookieD.password);
                 }
             }else{
-                $("#rememberMe").attr("checked","");
+                $("#rememberMe").removeAttr("checked");
                 $("#username").val("");
                 $("#password").val("");
             }
