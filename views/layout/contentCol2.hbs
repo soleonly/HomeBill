@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{title}}</title>
+    {{> includes}}
+</head>
+<body>
+{{> header}}
+<div class="wrap" id="wrap">
+    <div class="container">
+        <div class="row">
+            <div class="main clearfix">
+                <div class="col-xs-12 col-md-9 side-left">
+                    {{{body}}}
+                </div>
+                <div class="col-xs-12 col-md-3 side-right hidden-xs hidden-sm">
+                    {{> right}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{{_sections.jquery}}}
+{{> footer}}
+</body>
+</html>

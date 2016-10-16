@@ -1,0 +1,35 @@
+<div class="shadow-box">
+    <!-- tab -->
+    <div class="filter">
+        <ul class="">
+            <li><a href="?ord=newest"><i class="fa fa-newspaper-o"></i>最新的</a></li>
+            <li><a href="?ord=hottest"><i class="fa fa-fire"></i>热门的</a></li>
+            <!--
+            <li><a href="/blogs/hottest">全部的</a></li>
+            -->
+        </ul>
+    </div>
+    <!-- tab end -->
+    <!-- tab panes -->
+    <div class="stream-list p-stream">
+
+        <div class="stream-item">
+            <h1>{{title}}</h1>
+            <p>Welcome to {{title}}</p>
+        </div>
+
+    </div>
+</div>
+
+{{#section 'jquery'}}
+    <script type="text/javascript">
+        $(function () {
+            $('.shadow-box .filter ul li a[href]').each(function () {
+                $this = $(this);
+                if ($this[0].href == String(window.location)) {
+                    $this.closest('a').addClass("active");
+                }
+            });
+        });
+    </script>
+{{/section}}

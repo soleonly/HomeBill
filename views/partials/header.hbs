@@ -1,0 +1,92 @@
+<!-- Header BEGIN -->
+<div class="top-wrap">
+    <nav class="navbar navbar-inverse" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                        aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand logo" href="/"><img src="/images/logo/m42.png"></a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <!--<li data="home">
+                        <a href="/" nav="home">主页</a>
+                    </li>-->
+                    <!--#foreach($m in $menus)
+                    <li>
+                        <a href="$base/${m.url}" nav="${m.name}" target="${m.target}">${m.name}</a>
+                    </li>
+                    #end-->
+                    {{#each partials.menus}}
+                        <li>
+                            <a href="{{hrel}}" nav="{{nav}}" target="{{target}}">{{name}}</a>
+                        </li>
+                    {{/each}}
+                </ul>
+                <!--<div id="_search_box" class="search-box navbar-left hidden-xs hidden-sm">
+                    <form class="navbar-form" method="get" action="$base/browse/search">
+                        <input type="text" class="form-control" name="q" placeholder="搜索...">
+                        <button class="search-btn" type="submit"><i class="fa fa-search"></i></button>
+                    </form>
+                </div>-->
+
+                <ul class="nav navbar-nav navbar-right sign">
+                    {{#if user}}
+                    <li class="dropdown">
+                        <a href="#" class="publish dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-magic"></i> 发布
+                        </a>
+                        <ul class="dropdown-menu publishs" role="menu">
+                            <li>
+                                <a href="">
+                                    <i class=" icon"></i>
+                                    <span></span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="ava dropdown-toggle" data-toggle="dropdown">
+                            <img class="img-circle" src="">
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a href="$base/account/profile" class="ava">
+                                    #showAva(${profile.avatar}, "img-circle")
+                                    <span></span>
+                                </a>
+                            </li>
+                            <li class="divider"></li>
+
+                            <li><a href="/admin">后台管理</a></li>
+
+                            <li><a href="/logout">退出</a></li>
+                        </ul>
+                    </li>
+                    {{else}}
+                    <ul class="nav navbar-nav navbar-right sign">
+                        <li><a href="/login" class="signin">登录</a></li>
+                        <li class="hidden-xs"><span class="or">or</span></li>
+                        <li><a href="/register" class="signup">注册</a></li>
+                    </ul>
+                    {{/if}}
+                </ul>
+            </div>
+        </div>
+    </nav>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('.navbar-inverse  a[nav]').each(function () {
+            $this = $(this);
+            if ($this[0].href == String(window.location)) {
+                $this.closest('li').addClass("active");
+            }
+        });
+    });
+</script>

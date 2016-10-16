@@ -1,0 +1,89 @@
+<div class="login">
+    <a href="/">
+        <img src="/images/logo/m90.png" height="72" width="72">
+    </a>
+    <h1>{{title}}</h1>
+    <hr>
+    <form action="/login/post" method="post">
+        <div id="message">
+            {{#if msg}}
+                <div class="alert alert-danger">{{msg}}{{#if url}},<a href="{{url}}" target="_blank">点击跳转</a>{{/if}}</div>
+            {{/if}}
+        </div>
+        <label for="id_email">登录名:</label>
+        <div id="id_email">
+            <input id="username" name="username" value="{{form.username}}" class="form-control border" placeholder="用户名" type="text" data-required>
+        </div>
+        <label for="id_password">密码:</label>
+        <div id="id_password">
+            <input id="password" name="password" class="form-control border" placeholder="密码" type="password" data-required>
+        </div>
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" name="rememberMe"> 记住登录？
+            </label>
+        </div>
+
+        <div style="margin-top: 15px;">
+            <input id="submit" type="submit" class="btn btn-success border" value="登录 Use it">
+
+            <div class="/forgot">
+                <a href="register">
+                    注册
+                </a>
+                <a href="/forgotPass">
+                    忘记密码
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+{{#section 'jquery'}}
+    <script type="text/javascript">
+        $(function () {
+            $('form').validate({
+                onKeyup: true,
+                onChange: true,
+                eachValidField: function () {
+                    $(this).closest('div').removeClass('has-error').addClass('has-success');
+                },
+                eachInvalidField: function () {
+                    $(this).closest('div').removeClass('has-success').addClass('has-error');
+                },
+                description: {
+                    message: {
+                        required: '<div class="alert alert-danger">请先输入用户名/密码再进行登录操作</div>'
+                    }
+                }
+            });
+            setRememberMe();
+        })
+        function clearMsg(){
+            var msgDiv = $('#message');
+            if(msgDiv.html()!=""){
+                msgDiv.removeClass('has-error').addClass('has-success');
+                msgDiv.html('');
+            }
+        }
+        setTimeout(clearMsg,5000);
+        function setRememberMe(){
+            var rememberMe = $.cookie('rememberMe');
+            if(rememberMe != undefined){
+                var cookieD = JSON.parse(rememberMe)
+                if(cookieD.rememberMe=="on"){
+                    $("#username").val(cookieD.username);
+                    $("#password").val(cookieD.password);
+                }
+            }else{
+                $("#rememberMe").attr("checked","");
+                $("#username").val("");
+                $("#password").val("");
+            }
+
+        }
+    </script>
+{{/section}}
+
+

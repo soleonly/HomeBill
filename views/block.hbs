@@ -1,0 +1,28 @@
+<h1>{{title}}</h1>
+<ul>
+    {{#each tours}}
+        <li>
+            {{name}}  -  {{price}}
+            {{#if ../currency}}
+                ({{../currency.abbrev}})
+            {{/if}}
+        </li>
+    {{/each}}
+</ul>
+{{#if apecialsUrl}}
+    <p>check out our <a href="{{currency.name}}">specials</a>!</p>
+{{/if}}
+<p>
+    {{#each currencies}}
+        <a href="#">{{.}}</a>
+    {{/each}}
+</p>
+{{#section 'jquery'}}
+    <script type="text/javascript">
+        $(function () {
+            $("h1").html(123);
+        });
+    </script>
+{{/section}}
+
+

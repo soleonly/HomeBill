@@ -1,0 +1,29 @@
+<h1>{{title}}</h1>
+<p>Welcome to {{title}}</p>
+{{#section 'head'}}
+    <script src="/js/jquery-3.1.0.min.js"></script>
+    <script src="/js/handlebars.min.js"></script>
+    <script id="handlebarsTemplate" type="text/x-handlebars-template">
+        I have a \{{things}}
+    </script>
+{{/section}}
+<div id="contentDiv">Click the button...</div>
+<button id="btnAjax">generate content from ajax</button>
+{{#section 'jquery'}}
+    <script type="text/javascript">
+        $(function(){
+            var handlebarsTemplate = Handlebars.compile($("#handlebarsTemplate").html());
+            var contentDiv = $("#contentDiv");
+            $("#btnAjax").on("click",function(evt){
+                evt.preventDefault();
+                $.ajax("/client/data",{
+                    success:function(data){
+                        contentDiv.html(handlebarsTemplate(data));
+                    }
+                })
+
+            })
+        });
+    </script>
+{{/section}}
+

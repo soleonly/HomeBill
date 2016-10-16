@@ -1,0 +1,27 @@
+<h1>{{title}}</h1>
+<p>Welcome to {{title}}</p>
+{{#section 'head'}}
+    <script src="/js/jquery-3.1.0.min.js"></script>
+{{/section}}
+<button id="btnAjax">generate content from ajax</button>
+{{#section 'jquery'}}
+    <script type="text/javascript">
+        $(function(){
+            $("#btnAjax").on("click",function(evt){
+                evt.preventDefault();
+                $.ajax("/email/post",{
+                    type:"post",
+                    data:{
+                        to:"lqjaddls@126.com",
+                        subject:"testEmail",
+                        body:"<a href='www.baidu.com'>hello email!</a>"
+                    },
+                    success:function(data){
+                        alert(data.result);
+                    }
+                })
+            })
+        });
+    </script>
+{{/section}}
+
