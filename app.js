@@ -13,6 +13,7 @@ var block = require('./routes/block');
 var login = require('./routes/basic/login');
 var register = require('./routes/basic/register');
 var client = require('./routes/client');
+var bill = require('./routes/business/bill');
 var upload = require('./routes/upload');
 var credentials = require('./credentials');
 var menuDao = require("./models/Menu.js");
@@ -131,6 +132,7 @@ app.use('/flash/newsLetter', function (req, res, next) {
     delete req.session.flash;
 });
 app.use('/flash', flash);
+app.use('/bill', bill);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
