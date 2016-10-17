@@ -15,7 +15,7 @@ router.get('/', function (req, res, next) {
         resPost.on('data', function (d) {
             backdata+=d;
         });
-        resPost.on('end', function (d) {
+        resPost.on('end', function () {
             console.log(backdata);
             res.json(backdata);
         });
