@@ -1,54 +1,29 @@
 var express = require('express');
-var http = require('http');
+var credentials = require('../../credentials');
+var httpUtil = require('../../utils/httpUtil')(credentials);
 var router = express.Router();
 var Step = require('../../utils/Step');
 
 router.get('/', function (req, res, next) {
-    var options = {
-        host: '127.0.0.1',
-        port: '8080',
-        path: '/HomeBill/rest/user/75',
-        method: 'GET'
+    function callback(d) {
+        res.json(d);
     }
-    var reqPost = http.request(options, function (resPost) {
-        var backdata = "";
-        resPost.on('data', function (d) {
-            backdata+=d;
-        });
-        resPost.on('end', function () {
-            console.log(backdata);
-            res.json(backdata);
-        });
-    });
-    reqPost.end();
-    reqPost.on('error', function (e) {
+    function errorHandle(d) {
         console.error(e);
-    });
+    }
+    httpUtil.get("/rest/user/75", callback, errorHandle);
 });
 
 
 router.post('/post', function (req, res, next) {
     var reqJosnData = JSON.stringify(req.body);
-    var postheaders = {
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Content-Length': Buffer.byteLength(reqJosnData, 'utf8')
-    };
-    var optionspost = {
-        host: '127.0.0.1',
-        port: '8080',
-        path: '/HomeBill/rest/user/75',
-        method: 'POST',
-        headers: postheaders
-    };
-    var reqPost = http.request(optionspost, function (resPost) {
-        resPost.on('data', function (d) {
-            res.send(d);
-        });
-    });
-    reqPost.write(reqJosnData);
-    reqPost.end();
-    reqPost.on('error', function (e) {
+    function callback(d) {
+        res.json(d);
+    }
+    function errorHandle(d) {
         console.error(e);
-    });
+    }
+    httpUtil.post("/rest/user/75", reqJosnData, callback, errorHandle);
 });
+
 module.exports = router;
