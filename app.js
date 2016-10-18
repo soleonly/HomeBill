@@ -11,6 +11,7 @@ var index = require('./routes/basic/index');
 var login = require('./routes/basic/login');
 var register = require('./routes/basic/register');
 var user = require('./routes/basic/user');
+var utils = require('./routes/basic/utils');
 var bill = require('./routes/business/bill');
 var users = require('./routes/users');
 var block = require('./routes/block');
@@ -108,10 +109,10 @@ function getMenuData(res, next) {
 }
 app.use(function (req, res, next) {
     var reqUrl = req.url;
-    var reg=/\/login\s*|\/register\s*/;
+    var reg=/\/login\s*|\/register\s*|\/user\/findPass|\/utils\/*/;
     if(!reg.test(reqUrl)){
         if(!req.session.user){
-            res.redirect("login");
+            res.redirect("/login");
         }else{
             next();
         }
@@ -124,6 +125,7 @@ app.use('/login', login);
 app.use('/register', register);
 app.use('/bill', bill);
 app.use('/user', user);
+app.use('/utils', utils);
 app.use('/users', users);
 app.use('/email', email);
 app.use('/block', block);

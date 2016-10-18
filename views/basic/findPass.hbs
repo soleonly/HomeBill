@@ -24,6 +24,9 @@
                    placeholder="验证码"
                    type="text" data-required="">
         </div>
+        <div>
+            <img id="captcha" src="/utils/captcha/1">
+        </div>
         <input type="submit" class="btn btn-success border" value="找回密码">
     </form>
 </div>
@@ -52,6 +55,10 @@
                     }
                 }
             });
+            $("#captcha").click(function () {
+                var n = new Date().getMilliseconds();
+                $("#captcha").attr("src", "/utils/captcha/" + n);
+            })
         })
         function check() {
             var result = false;
@@ -74,21 +81,21 @@
             return result;
         }
         var msgChecked = false;
-        function clearMsg(){
+        function clearMsg() {
             var msgDiv = $('#message');
             msgDiv.removeClass('has-error').addClass('has-success');
             msgDiv.html('');
             msgChecked = false;
         }
 
-        function checkMsg(){
+        function checkMsg() {
             var msgDiv = $('#message');
-            if((!msgChecked)&&msgDiv.html()!=""){
-                setTimeout(clearMsg,5000);
+            if ((!msgChecked) && msgDiv.html() != "") {
+                setTimeout(clearMsg, 5000);
                 msgChecked = true;
             }
         }
-        setInterval(checkMsg,1000);
+        setInterval(checkMsg, 1000);
     </script>
 {{/section}}
 

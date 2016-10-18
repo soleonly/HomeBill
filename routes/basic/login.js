@@ -1,7 +1,7 @@
 var express = require('express');
 var md5 = require('../../utils/md5Util');
 var router = express.Router();
-var User = require("../../models/User.js");
+var User = require("../../models/User");
 var Step = require('../../utils/Step');
 
 router.get('/', function (req, res, next) {
