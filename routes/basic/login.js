@@ -116,7 +116,4 @@ router.post('/post', function (req, res, next) {
     );
 
 });
-router.get('/findPass', function (req, res, next) {
-    res.render('basic/findPass', {title: '找回密码', layout: "layout/logReg"});
-});
 module.exports = router;

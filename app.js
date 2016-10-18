@@ -8,12 +8,13 @@ var bodyParser = require('body-parser');
 var exphbs = require('express-handlebars');
 var mongoose = require("mongoose");
 var index = require('./routes/basic/index');
-var users = require('./routes/users');
-var block = require('./routes/block');
 var login = require('./routes/basic/login');
 var register = require('./routes/basic/register');
-var client = require('./routes/client');
+var user = require('./routes/basic/user');
 var bill = require('./routes/business/bill');
+var users = require('./routes/users');
+var block = require('./routes/block');
+var client = require('./routes/client');
 var upload = require('./routes/upload');
 var credentials = require('./credentials');
 var menuDao = require("./models/Menu.js");
@@ -119,20 +120,21 @@ app.use(function (req, res, next) {
     }
 });
 app.use('/', index);
+app.use('/login', login);
+app.use('/register', register);
+app.use('/bill', bill);
+app.use('/user', user);
 app.use('/users', users);
 app.use('/email', email);
 app.use('/block', block);
 app.use('/client', client);
 app.use('/upload', upload);
-app.use('/login', login);
-app.use('/register', register);
 app.use('/flash/newsLetter', function (req, res, next) {
     next();
     res.locals.flash = req.session.flash;
     delete req.session.flash;
 });
 app.use('/flash', flash);
-app.use('/bill', bill);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

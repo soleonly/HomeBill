@@ -104,10 +104,6 @@
                         var msgDiv = $('#message');
                         msgDiv.removeClass('has-success').addClass('has-error');
                         msgDiv.html('<div class="alert alert-danger">' + msg.msg + '</div>');
-                        setTimeout(function () {
-                            msgDiv.removeClass('has-error').addClass('has-success');
-                            msgDiv.html('');
-                        }, 1000);
                     }
                 }
             });

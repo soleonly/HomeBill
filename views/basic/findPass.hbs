@@ -5,7 +5,7 @@
     <h1>{{title}}</h1>
     <hr>
 
-    <form onsubmit="return check()" action="/login/findPass" method="post">
+    <form onsubmit="return check()" action="/user/findPass" method="post">
         <div id="message">
             {{#if msg}}
                 <div class="alert alert-danger">{{msg}}</div>
@@ -18,11 +18,11 @@
                    type="text" data-required="" data-conditional="email" data-description="email"
                    data-describedby="message">
         </div>
-        <label for="id_password">验证码:</label>
-        <div id="id_password">
-            <input id="password" class="form-control border" maxlength="18" name="password"
+        <label for="id_passpod">验证码:</label>
+        <div id="id_passpod">
+            <input id="passpod" class="form-control border" maxlength="18" name="passpod"
                    placeholder="验证码"
-                   type="password" data-required="">
+                   type="text" data-required="">
         </div>
         <input type="submit" class="btn btn-success border" value="找回密码">
     </form>
@@ -55,26 +55,19 @@
         })
         function check() {
             var result = false;
-            $.ajax("/login/findPass/valid", {
+            $.ajax("/user/findPass/valid", {
                 type: "post",
                 async: false,      //ajax同步
                 data: {
-                    username: $("#username").val(),
-                    nickname: $("#nickname").val(),
                     email: $("#email").val(),
-                    password: $("#password").val(),
+                    passpod: $("#passpod").val(),
                 }, success: function (msg) {
                     if (msg.success) {
-                        $("#valid").val(msg.valid);
                         result = true;
                     } else {
                         var msgDiv = $('#message');
                         msgDiv.removeClass('has-success').addClass('has-error');
                         msgDiv.html('<div class="alert alert-danger">' + msg.msg + '</div>');
-                        setTimeout(function () {
-                            msgDiv.removeClass('has-error').addClass('has-success');
-                            msgDiv.html('');
-                        }, 1000);
                     }
                 }
             });
