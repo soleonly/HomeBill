@@ -83,8 +83,9 @@ router.post('/post', function (req, res, next) {
 
 function searchUserForPost(res, UserModel, form, control) {
     UserModel.find({username: form.username}, function (err, users) {
+        var errDesc = "";
         if (err) {
-            var errDesc = "检索用户名错误 ";
+            errDesc = "检索用户名错误 ";
             console.error(errDesc + err);
             res.render('basic/register', {title: '账号注册', layout: "layout/logReg", form: form, msg: errDesc});
             control.end(control.index + "." + errDesc);

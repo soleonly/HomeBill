@@ -6,7 +6,7 @@ module.exports = function () {
     var options = {
         width: 280,
         height: 34,
-        offset: 75,
+        offset: 50,
         quality: 50,
         fontsize: 32,
         //generate: function () {return "123456";}

@@ -5,11 +5,8 @@
     <h1>{{title}}</h1>
     <hr>
 
-    <form onsubmit="return check()" action="/user/findPass" method="post">
+    <form onsubmit="return false">
         <div id="message">
-            {{#if msg}}
-                <div class="alert alert-danger">{{msg}}</div>
-            {{/if}}
         </div>
         <label for="id_name">注册邮箱:</label>
         <div id="id_email">
@@ -22,18 +19,21 @@
         <div id="id_passpod">
             <input id="passpod" class="form-control border" maxlength="18" name="passpod"
                    placeholder="验证码"
-                   type="text" data-required="">
+                   type="text" data-required="" data-conditional="passpod" data-description="passpod"
+                   data-describedby="message">
         </div>
         <div>
             <img id="captcha" src="/utils/captcha/1">
         </div>
-        <input type="submit" class="btn btn-success border" value="找回密码">
+        <input id="submit" type="submit" class="btn btn-success border" value="找回密码">
     </form>
 </div>
 
 
 {{#section 'jquery'}}
     <script type="text/javascript">
+        var emailValid = false;
+        var passpodValid = false;
         $(function () {
             $('form').validate({
                 onKeyup: true,
@@ -46,12 +46,20 @@
                 },
                 conditional: {
                     email: function () {
-                        return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test($(this).val());
+                        emailValid = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test($(this).val())
+                        return emailValid;
+                    },
+                    passpod: function () {
+                        passpodValid = /\w{6}/.test($(this).val())
+                        return passpodValid;
                     }
                 },
                 description: {
                     email: {
                         conditional: '<div class="alert alert-danger">邮箱格式不合法</div>'
+                    },
+                    passpod: {
+                        conditional: '<div class="alert alert-danger">验证码格式不合法</div>'
                     }
                 }
             });
@@ -59,18 +67,35 @@
                 var n = new Date().getMilliseconds();
                 $("#captcha").attr("src", "/utils/captcha/" + n);
             })
+            $("#submit").click(function () {
+                if (emailValid && emailValid) {
+                    findPass();
+                }
+            });
         })
-        function check() {
-            var result = false;
+        function findPass() {
             $.ajax("/user/findPass/valid", {
                 type: "post",
-                async: false,      //ajax同步
                 data: {
                     email: $("#email").val(),
                     passpod: $("#passpod").val(),
                 }, success: function (msg) {
                     if (msg.success) {
-                        result = true;
+                        $.ajax("/user/findPass/post", {
+                                    type: "post",
+                                    data: {
+                                        email: $("#email").val(),
+                                    }, success: function (msg) {
+                                        var msgDiv = $('#message');
+                                        if (msg.success) {
+                                            msgDiv.html('<div class="alert alert-danger">' + msg.msg + '<a href="' + msg.msg + '" target="_blank">点击跳转</a> </div>');
+                                        } else {
+                                            msgDiv.removeClass('has-success').addClass('has-error');
+                                            msgDiv.html('<div class="alert alert-danger">' + msg.msg + '</div>');
+                                        }
+                                    }
+                                }
+                        );
                     } else {
                         var msgDiv = $('#message');
                         msgDiv.removeClass('has-success').addClass('has-error');
@@ -78,7 +103,6 @@
                     }
                 }
             });
-            return result;
         }
         var msgChecked = false;
         function clearMsg() {

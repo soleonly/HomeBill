@@ -3,7 +3,7 @@
  */
 var mongoose = require("mongoose");
 var userSchema = mongoose.Schema({
-    username:{type: String},
+    username:{type: String,required: true},
     nickname:{type: String},
     password:{type: String},
     email:{type: String},
@@ -14,6 +14,7 @@ var userSchema = mongoose.Schema({
     lastLogin:{type: Date},
     update:{type: Date},
     available:{type: Boolean},
+    findPass:{type: Boolean, default: false},
     interests:[{type: String}],
 });
 userSchema.methods.getDisplayMoney = function(){

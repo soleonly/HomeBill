@@ -231,3 +231,6 @@ input[type=text],input[type=password],textarea {
 		margin-right: 15px;
 	}
 }
+.btn {
+	margin-top: 10px;
+}
