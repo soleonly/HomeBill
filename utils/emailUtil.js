@@ -10,7 +10,7 @@ module.exports = function (credentials) {
         port: 465,
         auth: {
             user: credentials.email.user,
-            pass: "Lqj1314126"
+            pass: credentials.email.pass
         }
     }));
     var from = '"lqjaddls" <lqjaddls@126.com>';

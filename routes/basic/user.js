@@ -137,7 +137,7 @@ router.get('/changePass', function (req, res, next) {
 router.post('/changePass/post', function (req, res, next) {
     var form = asembleReq(req);
     var errDesc = "";
-    var query = {email: form.email, findPass: true};
+    var query = {email: form.email};
     var update = {findPass: false, password: md5(form.password)};
     var options = {upsert: true, new: true};
     User.findOne(query, function (err, doc) {
@@ -146,7 +146,7 @@ router.post('/changePass/post', function (req, res, next) {
             console.error(errDesc + err);
             res.render('basic/changePass', {title: '修改密码', layout: "layout/logReg", msg: errDesc});
         }
-        if (doc) {
+        if (doc.findPass==true) {
             User.findOneAndUpdate(query, update, options, function (err, doc) {
                 if (err) {
                     errDesc = "密码重置错误 ";
@@ -157,6 +157,10 @@ router.post('/changePass/post', function (req, res, next) {
                     res.redirect(303, '/login');
                 }
             });
+        }else{
+            errDesc = "未开启密码重置";
+            console.error(errDesc + err);
+            res.render('basic/changePass', {title: '修改密码', layout: "layout/logReg", msg: errDesc});
         }
 
     });

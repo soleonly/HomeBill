@@ -20,6 +20,9 @@
     "nodemailer-smtp-transport":"2.6.0",
     "q":"~1.4.1",
     "crypto":"0.0.3",
+    "images":"3.0.0",
+    "node-xlsx":"0.7.4",
+    "excel-export":"0.5.1",
     "serve-favicon": "~2.3.0"
   }
 }

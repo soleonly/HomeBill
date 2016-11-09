@@ -68,7 +68,7 @@ function searchUserForLogin(res, UserModel, form, control) {
 
 function updateUserLogindate(res, UserModel, form, control) {
     var query = {username: form.username, available: true};
-    var update = {lastLogin: new Date()};
+    var update = {lastLogin: new Date(), findPass: false};
     var options = {upsert: true, new: true};
     UserModel.findOneAndUpdate(query, update, options, function (err, doc) {
         if (err) {
