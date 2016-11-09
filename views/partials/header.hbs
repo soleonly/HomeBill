@@ -14,14 +14,6 @@
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <!--<li data="home">
-                        <a href="/" nav="home">主页</a>
-                    </li>-->
-                    <!--#foreach($m in $menus)
-                    <li>
-                        <a href="$base/${m.url}" nav="${m.name}" target="${m.target}">${m.name}</a>
-                    </li>
-                    #end-->
                     {{#each partials.menus}}
                         <li>
                             <a href="{{hrel}}" nav="{{nav}}" target="{{target}}">{{name}}</a>
@@ -37,43 +29,43 @@
 
                 <ul class="nav navbar-nav navbar-right sign">
                     {{#if user}}
-                    <li class="dropdown">
-                        <a href="#" class="publish dropdown-toggle" data-toggle="dropdown">
-                            <i class="fa fa-magic"></i> 发布
-                        </a>
-                        <ul class="dropdown-menu publishs" role="menu">
-                            <li>
-                                <a href="">
-                                    <i class=" icon"></i>
-                                    <span></span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="ava dropdown-toggle" data-toggle="dropdown">
-                            <img class="img-circle" src="">
-                        </a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li>
-                                <a href="$base/account/profile" class="ava">
-                                    #showAva(${profile.avatar}, "img-circle")
-                                    <span></span>
-                                </a>
-                            </li>
-                            <li class="divider"></li>
+                        <li class="dropdown">
+                            <a href="#" class="publish dropdown-toggle" data-toggle="dropdown">
+                                <i class="fa fa-magic"></i> 发布
+                            </a>
+                            <ul class="dropdown-menu publishs" role="menu">
+                                <li>
+                                    <a href="">
+                                        <i class=" icon"></i>
+                                        <span></span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="ava dropdown-toggle" data-toggle="dropdown">
+                                <img class="img-circle" src="/images/ava/default.png">
+                            </a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li>
+                                    <a href="/user/basicInfo" class="ava">
+                                        <img class="img-circle" src="/images/ava/default.png">
+	    		                		<span>{{user.username}}</span>
+                                    </a>
+                                </li>
+                                <li class="divider"></li>
 
-                            <li><a href="/admin">后台管理</a></li>
+                                <li><a href="/mblog/admin">后台管理</a></li>
 
-                            <li><a href="/logout">退出</a></li>
-                        </ul>
-                    </li>
+                                <li><a href="/mblog/logout">退出</a></li>
+                            </ul>
+                        </li>
                     {{else}}
-                    <ul class="nav navbar-nav navbar-right sign">
-                        <li><a href="/login" class="signin">登录</a></li>
-                        <li class="hidden-xs"><span class="or">or</span></li>
-                        <li><a href="/register" class="signup">注册</a></li>
-                    </ul>
+                        <ul class="nav navbar-nav navbar-right sign">
+                            <li><a href="/login" class="signin">登录</a></li>
+                            <li class="hidden-xs"><span class="or">or</span></li>
+                            <li><a href="/register" class="signup">注册</a></li>
+                        </ul>
                     {{/if}}
                 </ul>
             </div>

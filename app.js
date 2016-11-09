@@ -35,6 +35,25 @@ app.engine('hbs', exphbs({
             if (!this._sections) this._sections = {};
             this._sections[name] = options.fn(this);
             return null;
+        },
+        expression:function() {
+            var exps = [];
+            try{
+                //最后一个参数作为展示内容，也就是平时的options。不作为逻辑表达式部分
+                var arg_len = arguments.length;
+                var len = arg_len-1;
+                for(var j = 0;j<len;j++){
+                    exps.push(arguments[j]);
+                }
+                var result = eval(exps.join(' '));
+                if (result) {
+                    return arguments[len].fn(this);
+                } else {
+                    return arguments[len].inverse(this);
+                }
+            }catch(e){
+                throw new Error('Handlerbars Helper "expression" can not deal with wrong expression:'+exps.join(' ')+".");
+            }
         }
     }
 }));

@@ -1,0 +1,69 @@
+<script src="/js/handlebars.min.js"></script>
+<div class="panel panel-default stacked">
+    <div class="panel-heading">
+        <ul class="nav nav-pills account-tab">
+            <li class="active"><a href="profile">基本信息</a></li>
+            <li><a href="avatar">修改头像</a></li>
+            <li><a href="password">修改密码</a></li>
+        </ul>
+    </div>
+    <div class="panel-body">
+        <div id="message">
+        </div>
+        <div class="tab-pane active" id="profile">
+            <form id="pf" action="profile" method="post" class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-lg-3" for="nickname">昵称</label>
+                    <div class="col-lg-4">
+                        <input type="text" class="form-control" name="name" value="{{user.nickname}}" maxlength="7"
+                               data-required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-lg-3" for="email">邮箱地址</label>
+                    <div class="col-lg-4">
+                        <span class="form-control">{{user.email}}</span>
+                    </div>
+                    <div class="col-lg-3" style="padding-top: 6px;">
+                        {{#expression user.available '==' true}}
+                            <span class="label label-success">已验证</span>
+                        {{else}}
+                            <span class="label label-warning">未验证</span>
+                        {{/expression}}
+                        <a href="/user/changeEmail">修改邮箱</a>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-lg-3" for="nickname">个性签名</label>
+                    <div class="col-lg-6">
+                        <textarea name="signature" class="form-control" rows="3"
+                                  maxlength="128">{{user.username}}</textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">提交</button>
+                    </div>
+                </div><!-- /form-actions -->
+            </form>
+        </div>
+    </div><!-- /panel-content -->
+</div><!-- /panel -->
+
+{{#section 'jquery'}}
+    <script type="text/javascript">
+        $(function () {
+            Handlebars.registerHelper('compare', function (value, options) {
+                console.log('value:', value); // value: 2
+                console.log('this:', this); // this: Object {num: 2}
+                console.log('fn(this):', options.fn(this)); // fn(this): 2是偶数
+                if (value == true) {
+                    return options.fn(this);
+                } else {
+                    return options.inverse(this);
+                }
+            });
+        });
+
+    </script>
+{{/section}}

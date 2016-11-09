@@ -168,4 +168,7 @@ router.post('/changePass/post', function (req, res, next) {
 
 });
 
+router.get('/basicInfo', function (req, res, next) {
+    res.render('basic/basicInfo', {title: '修改用户信息', layout: "layout/contentCol1"});
+});
 module.exports = router;
