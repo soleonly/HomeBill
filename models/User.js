@@ -16,6 +16,8 @@ var userSchema = mongoose.Schema({
     available:{type: Boolean},
     findPass:{type: Boolean, default: false},
     interests:[{type: String}],
+    motto:{type: String},
+    headPortrait:{type: String,default:"/images/ava/default.png"},
 });
 userSchema.methods.getDisplayMoney = function(){
     return "￥" + this.money;

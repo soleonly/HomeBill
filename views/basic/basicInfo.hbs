@@ -9,13 +9,16 @@
     </div>
     <div class="panel-body">
         <div id="message">
+            {{#if msg}}
+                <div class="alert alert-danger">{{msg}}</div>
+            {{/if}}
         </div>
         <div class="tab-pane active" id="profile">
-            <form id="pf" action="profile" method="post" class="form-horizontal">
+            <form action="/user/basicInfo/post" method="post" class="form-horizontal">
                 <div class="form-group">
                     <label class="control-label col-lg-3" for="nickname">昵称</label>
                     <div class="col-lg-4">
-                        <input type="text" class="form-control" name="name" value="{{user.nickname}}" maxlength="7"
+                        <input type="text" class="form-control" name="nickname" value="{{user.nickname}}" maxlength="7"
                                data-required>
                     </div>
                 </div>
@@ -34,12 +37,13 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="control-label col-lg-3" for="nickname">个性签名</label>
+                    <label class="control-label col-lg-3" for="motto">座右铭</label>
                     <div class="col-lg-6">
-                        <textarea name="signature" class="form-control" rows="3"
-                                  maxlength="128">{{user.username}}</textarea>
+                        <textarea name="motto" class="form-control" rows="3"
+                                  maxlength="128">{{user.motto}}</textarea>
                     </div>
                 </div>
+                <input type="hidden" value="{{user._id}}" name="_id">
                 <div class="form-group">
                     <div class="text-center">
                         <button type="submit" class="btn btn-primary">提交</button>
@@ -53,16 +57,51 @@
 {{#section 'jquery'}}
     <script type="text/javascript">
         $(function () {
-            Handlebars.registerHelper('compare', function (value, options) {
-                console.log('value:', value); // value: 2
-                console.log('this:', this); // this: Object {num: 2}
-                console.log('fn(this):', options.fn(this)); // fn(this): 2是偶数
-                if (value == true) {
-                    return options.fn(this);
-                } else {
-                    return options.inverse(this);
+            $(function () {
+                $('form').validate({
+                    onKeyup: true,
+                    onChange: true,
+                    eachValidField: function () {
+                        $(this).closest('div').removeClass('has-error').addClass('has-success');
+                    },
+                    eachInvalidField: function () {
+                        $(this).closest('div').removeClass('has-success').addClass('has-error');
+                    },
+                    conditional: {
+                        nickname: function () {
+                            return /^[a-z][a-z_0-9]{4,18}$/i.test($(this).val());
+                        },
+                        motto: function () {
+                            return $(this).val().length > 0;
+                        },
+                    },
+                    description: {
+                        nickname: {
+                            conditional: '<div class="alert alert-danger">昵称4-18位</div>'
+                        },
+                        motto: {
+                            conditional: '<div class="alert alert-danger">座右铭不能为空</div>'
+                        }
+                    }
+                });
+            })
+
+            var msgChecked = false;
+            function clearMsg() {
+                var msgDiv = $('#message');
+                msgDiv.removeClass('has-error').addClass('has-success');
+                msgDiv.html('');
+                msgChecked = false;
+            }
+
+            function checkMsg() {
+                var msgDiv = $('#message');
+                if ((!msgChecked) && msgDiv.html() != "") {
+                    setTimeout(clearMsg, 5000);
+                    msgChecked = true;
                 }
-            });
+            }
+            setInterval(checkMsg, 1000);
         });
 
     </script>

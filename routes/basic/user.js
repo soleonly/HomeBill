@@ -5,15 +5,22 @@ var Step = require('../../utils/Step');
 var credentials = require('../../credentials');
 var emailUtil = require("../../utils/emailUtil")(credentials);
 var md5 = require('../../utils/md5Util');
+var mongoose = require("mongoose");
 router.get('/findPass', function (req, res, next) {
     res.render('basic/findPass', {title: '找回密码', layout: "layout/logReg"});
 });
 
 function asembleReq(req) {
+    var _id = req.body._id || req.query._id || "";
+    var nickname = req.body.nickname || req.query.nickname || "";
+    var motto = req.body.motto || req.query.motto || "";
     var email = req.body.email || req.query.email || "";
     var passpod = req.body.passpod || req.query.passpod || "";
     var password = req.body.password || req.query.password || "";
     return {
+        _id: _id,
+        nickname: nickname,
+        motto: motto,
         email: email,
         passpod: passpod,
         password: password,
@@ -170,5 +177,38 @@ router.post('/changePass/post', function (req, res, next) {
 
 router.get('/basicInfo', function (req, res, next) {
     res.render('basic/basicInfo', {title: '修改用户信息', layout: "layout/contentCol1"});
+});
+router.post('/basicInfo/post', function (req, res, next) {
+    var form = asembleReq(req);
+    var errDesc = "";
+    var query = {_id: mongoose.Types.ObjectId(form._id)};
+    var update = {nickname: form.nickname, motto: form.motto};
+    var options = {upsert: true, new: true};
+    User.findOne(query, function (err, doc) {
+        if (err) {
+            errDesc = "修改用户信息 ";
+            console.error(errDesc + err);
+            res.render('basic/basicInfo', {title: '修改用户信息', layout: "layout/contentCol1", msg: errDesc});
+        }
+        if (doc!=null) {
+            User.findOneAndUpdate(query, update, options, function (err, doc) {
+                if (err) {
+                    errDesc = "修改用户信息 ";
+                    console.error(errDesc + err);
+                    res.render('basic/basicInfo', {title: '修改用户信息', layout: "layout/contentCol1", msg: errDesc});
+                }
+                if (doc.findPass == false) {
+                    res.redirect(303, '/');
+                }
+            });
+        }else{
+            errDesc = "用户不存在";
+            console.error(errDesc + err);
+            res.render('basic/basicInfo', {title: '修改用户信息', layout: "layout/contentCol1", msg: errDesc});
+        }
+
+    });
+
+
 });
 module.exports = router;

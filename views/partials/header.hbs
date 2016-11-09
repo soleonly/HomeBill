@@ -44,20 +44,20 @@
                         </li>
                         <li class="dropdown">
                             <a href="#" class="ava dropdown-toggle" data-toggle="dropdown">
-                                <img class="img-circle" src="/images/ava/default.png">
+                                <img class="img-circle" src="{{user.headPortrait}}">
                             </a>
                             <ul class="dropdown-menu" role="menu">
                                 <li>
                                     <a href="/user/basicInfo" class="ava">
-                                        <img class="img-circle" src="/images/ava/default.png">
+                                        <img class="img-circle" src="{{user.headPortrait}}">
 	    		                		<span>{{user.username}}</span>
                                     </a>
                                 </li>
                                 <li class="divider"></li>
 
-                                <li><a href="/mblog/admin">后台管理</a></li>
+                                <li><a href="/admin">后台管理</a></li>
 
-                                <li><a href="/mblog/logout">退出</a></li>
+                                <li><a href="/logout">退出</a></li>
                             </ul>
                         </li>
                     {{else}}
