@@ -8,10 +8,16 @@
     <form onsubmit="return false">
         <div id="message">
         </div>
-        <label for="id_name">注册邮箱:</label>
-        <div id="id_email">
-            <input id="email" maxlength="64" class="form-control border" name="email" value="{{form.email}}"
+        <label for="id_oldEmail">注册邮箱:</label>
+        <div id="id_oldEmail">
+            <input id="oldEmail" maxlength="64" class="form-control border" value="{{email}}"
                    placeholder="注册邮箱"
+                   type="text" readonly>
+        </div>
+        <label for="id_email">新邮箱:</label>
+        <div id="id_email">
+            <input id="email" maxlength="64" class="form-control border" name="email" value=""
+                   placeholder="新邮箱"
                    type="text" data-required="" data-conditional="email" data-description="email"
                    data-describedby="message">
         </div>
@@ -25,6 +31,7 @@
         <div>
             <img id="captcha" src="/utils/captcha/1">
         </div>
+        <input type="hidden" value="{{user._id}}" name="_id" id="_id">
         <input id="submit" type="submit" class="btn btn-success border" value="找回密码">
     </form>
 </div>
@@ -69,21 +76,23 @@
             })
             $("#submit").click(function () {
                 if (emailValid && emailValid) {
-                    findPass();
+                    changeEmail();
                 }
             });
         })
-        function findPass() {
-            $.ajax("/user/findPass/valid", {
+        function changeEmail() {
+            $.ajax("/user/changeEmail/valid", {
                 type: "post",
                 data: {
+                    _id: $("#_id").val(),
                     email: $("#email").val(),
                     passpod: $("#passpod").val(),
                 }, success: function (msg) {
                     if (msg.success) {
-                        $.ajax("/user/findPass/post", {
+                        $.ajax("/user/changeEmail/post", {
                                     type: "post",
                                     data: {
+                                        _id: $("#_id").val(),
                                         email: $("#email").val(),
                                     }, success: function (msg) {
                                         var msgDiv = $('#message');

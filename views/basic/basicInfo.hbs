@@ -2,9 +2,9 @@
 <div class="panel panel-default stacked">
     <div class="panel-heading">
         <ul class="nav nav-pills account-tab">
-            <li class="active"><a href="profile">基本信息</a></li>
-            <li><a href="avatar">修改头像</a></li>
-            <li><a href="password">修改密码</a></li>
+            <li class="active"><a href="/user/basicInfo">基本信息</a></li>
+            <li><a href="/user/headPortrait">修改头像</a></li>
+            <li><a href="/user/changePass">修改密码</a></li>
         </ul>
     </div>
     <div class="panel-body">
@@ -18,8 +18,11 @@
                 <div class="form-group">
                     <label class="control-label col-lg-3" for="nickname">昵称</label>
                     <div class="col-lg-4">
-                        <input type="text" class="form-control" name="nickname" value="{{user.nickname}}" maxlength="7"
-                               data-required>
+                        <input maxlength="18" class="form-control border" name="nickname"
+                               value="{{user.nickname}}"
+                               placeholder="昵称"
+                               type="text" data-required="" data-conditional="nickname" data-description="nickname"
+                               data-describedby="message">
                     </div>
                 </div>
                 <div class="form-group">
@@ -40,7 +43,8 @@
                     <label class="control-label col-lg-3" for="motto">座右铭</label>
                     <div class="col-lg-6">
                         <textarea name="motto" class="form-control" rows="3"
-                                  maxlength="128">{{user.motto}}</textarea>
+                                  maxlength="128" data-conditional="motto" data-description="motto"
+                                  data-describedby="message" >{{user.motto}}</textarea>
                     </div>
                 </div>
                 <input type="hidden" value="{{user._id}}" name="_id">
@@ -57,36 +61,37 @@
 {{#section 'jquery'}}
     <script type="text/javascript">
         $(function () {
-            $(function () {
-                $('form').validate({
-                    onKeyup: true,
-                    onChange: true,
-                    eachValidField: function () {
-                        $(this).closest('div').removeClass('has-error').addClass('has-success');
+
+            $('form').validate({
+                onKeyup: true,
+                onChange: true,
+                eachValidField: function () {
+                    $(this).closest('div').removeClass('has-error').addClass('has-success');
+                },
+                eachInvalidField: function () {
+                    $(this).closest('div').removeClass('has-success').addClass('has-error');
+                },
+                conditional: {
+                    nickname: function () {
+                        return $(this).val().length > 3 && $(this).val().length < 18;
                     },
-                    eachInvalidField: function () {
-                        $(this).closest('div').removeClass('has-success').addClass('has-error');
+                    motto: function () {
+                        return $(this).val().length > 0;
                     },
-                    conditional: {
-                        nickname: function () {
-                            return /^[a-z][a-z_0-9]{4,18}$/i.test($(this).val());
-                        },
-                        motto: function () {
-                            return $(this).val().length > 0;
-                        },
+                },
+                description: {
+                    nickname: {
+                        conditional: '<div class="alert alert-danger">昵称4-18位</div>'
                     },
-                    description: {
-                        nickname: {
-                            conditional: '<div class="alert alert-danger">昵称4-18位</div>'
-                        },
-                        motto: {
-                            conditional: '<div class="alert alert-danger">座右铭不能为空</div>'
-                        }
+                    motto: {
+                        conditional: '<div class="alert alert-danger">座右铭不能为空</div>'
                     }
-                });
-            })
+                }
+            });
+
 
             var msgChecked = false;
+
             function clearMsg() {
                 var msgDiv = $('#message');
                 msgDiv.removeClass('has-error').addClass('has-success');
@@ -101,6 +106,7 @@
                     msgChecked = true;
                 }
             }
+
             setInterval(checkMsg, 1000);
         });
 

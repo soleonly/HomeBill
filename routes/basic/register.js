@@ -105,7 +105,6 @@ function sendRegisterEmail(res, form, control) {
     emailUtil.send(form.email, subject, body, control);
 }
 function saveUser(res, userModel, form, control) {
-    form.available = false;
     form.create = new Date();
     new userModel(form).save(function (err, user) {
             var errDesc = "请登录邮箱激活用户 ";

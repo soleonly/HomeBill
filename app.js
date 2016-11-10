@@ -9,6 +9,7 @@ var exphbs = require('express-handlebars');
 var mongoose = require("mongoose");
 var index = require('./routes/basic/index');
 var login = require('./routes/basic/login');
+var logout = require('./routes/basic/logout');
 var register = require('./routes/basic/register');
 var user = require('./routes/basic/user');
 var utils = require('./routes/basic/utils');
@@ -128,7 +129,7 @@ function getMenuData(res, next) {
 }
 app.use(function (req, res, next) {
     var reqUrl = req.url;
-    var reg=/\/login\s*|\/register\s*|\/user\/\w*Pass|\/utils\/*/;
+    var reg=/\/login\s*|\/register\s*|\/user\/\w*Pass|\/utils\/*|\/logout\s*/;
     if(!reg.test(reqUrl)){
         if(!req.session.user){
             res.redirect("/login");
@@ -141,6 +142,7 @@ app.use(function (req, res, next) {
 });
 app.use('/', index);
 app.use('/login', login);
+app.use('/logout', logout);
 app.use('/register', register);
 app.use('/bill', bill);
 app.use('/user', user);
