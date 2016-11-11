@@ -24,13 +24,13 @@
                 </label>
             </div>
             <div id="picDiv" class="update_ava1">
-                <img id="pic"  class="dragAble" alt="头像" src="/images/ava/default.png" />
+                <img id="pic" class="dragAble" alt="头像" src="/images/ava/cover.png"/>
             </div>
 
             <div class="form-group">
                 <div class="text-center">
-                    <input id="btn1" type="button" value="放大" class="btn" onclick="ImageChange(true)" />
-                    <input id="btn2" type="button" value="缩小" class="btn"  onclick="ImageChange(false)" />
+                    <input id="btn1" type="button" value="放大" class="btn" onclick="ImageChange(true)"/>
+                    <input id="btn2" type="button" value="缩小" class="btn" onclick="ImageChange(false)"/>
                     <button type="submit" class="btn btn-primary">提交</button>
                 </div>
             </div>
@@ -40,95 +40,102 @@
 
 {{#section 'jquery'}}
     <script type="text/javascript">
-        //图片放大和缩小（兼容IE和火狐，谷歌）
+        $("#picDiv").css("background-image", "url(/images/ava/default.png)");
+        var zoom = 1;
+        var zoomMax = 1;
+        var zoomMin = 0.6;
+        var zoomRitio = 1.1;
+        var oImg = document.getElementById("pic");
+        var oImgw = oImg.width;
+        var oImgh = oImg.height;
         function ImageChange(args) {
-            var oImg = document.getElementById("pic");
             if (args) {
-                oImg.width = oImg.width * 1.1;
-                oImg.height = oImg.height * 1.1;
-                // oImg.style.zoom = parseInt(oImg.style.zoom) + (args ? +20 : -20) + '%';
+                if(zoom*zoomRitio<=zoomMax){
+                    zoom *= zoomRitio;
+                }else{
+                    zoom = zoomMax;
+                }
+
+            }else{
+                if(zoom/zoomRitio>=zoomMin){
+                    zoom /= zoomRitio;
+                }else{
+                    zoom = zoomMin;
+                }
             }
-            else {
-                oImg.width = oImg.width / 1.1;
-                oImg.height = oImg.height / 1.1;
-            }
+            oImg.width = oImgw * zoom;
+            oImg.height = oImgh * zoom;
         }
-
-
-
         //获取div的四个顶点坐标
-        function getDivPosition()
-        {
-            var odiv=document.getElementById('picDiv');
-            //  alert(odiv.getBoundingClientRect().left);
-            // alert(odiv.getBoundingClientRect().top);
-
-            var xLeft,xRigh,yTop,yBottom;
-            return {
-                xLeft:odiv.getBoundingClientRect().left,
-                xRigh:odiv.getBoundingClientRect().left+130,
-                yTop:odiv.getBoundingClientRect().top,
-                yBottom:odiv.getBoundingClientRect().top+130
+        function getDivPosition() {
+            var odiv = document.getElementById('picDiv');
+            var point = {
+                xLeft: odiv.getBoundingClientRect().left,
+                xRigh: odiv.getBoundingClientRect().left + 300,
+                yTop: odiv.getBoundingClientRect().top,
+                yBottom: odiv.getBoundingClientRect().top + 300
             };
+            return point;
         }
-
+        //获取img的四个顶点坐标
+        function getImgPosition() {
+            var point = {
+                xLeft: oImg.getBoundingClientRect().left,
+                xRigh: oImg.getBoundingClientRect().left + oImg.width,
+                yTop: oImg.getBoundingClientRect().top,
+                yBottom: oImg.getBoundingClientRect().top + oImg.height
+            };
+            return point;
+        }
         //获取鼠标坐标
-        function mousePos(e)
-        {
-            var x,y;
-            var e = e||window.event;
+        function mousePos(e) {
+            var e = e || window.event;
             return {
-                x:e.clientX+document.body.scrollLeft+document.documentElement.scrollLeft,
-                y:e.clientY+document.body.scrollTop+document.documentElement.scrollTop
+                x: e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft,
+                y: e.clientY + document.body.scrollTop + document.documentElement.scrollTop
             };
         };
 
         //在固定div层拖动图片
-        var ie = document.all;
-        var nn6 = document.getElementById && !document.all;
         var isdrag = false;
         var y, x;
-        var oDragObj;
-
-
-        //鼠标移动
-        function moveMouse(e) {
-            //鼠标的坐标
-            mousePos(e).x   ;
-            mousePos(e).y  ;
-            //div的四个顶点坐标
-            getDivPosition().xLeft
-            getDivPosition().xRigh
-            getDivPosition().yTop
-            getDivPosition().yBottom
-
-            if(isdrag && mousePos(e).x > getDivPosition().xLeft &&  mousePos(e).x < getDivPosition().xRigh  &&  mousePos(e).y >getDivPosition().yTop && mousePos(e).y< getDivPosition().yBottom )
-            {
-                oDragObj.style.top = (nn6 ? nTY + e.clientY - y : nTY + event.clientY - y) + "px";
-                oDragObj.style.left = (nn6 ? nTX + e.clientX - x : nTX + event.clientX - x) + "px";
-                return false;
+        var pos1;
+        var dp = getDivPosition();
+        var ip;
+        function initDrag() {
+            isdrag = true;
+            pos1 = mousePos();
+            ip = getImgPosition();
+        }
+        function mouseMove() {
+            var pos2;
+            if (isdrag == true) {
+                pos2 = mousePos();
+                var vx = pos2.x - pos1.x;
+                var vy = pos2.y - pos1.y;
+                //div的四个顶点坐标
+                ;
+                if (ip.xLeft + vx <= dp.xLeft) {
+                    vx = dp.xLeft - ip.xLeft;
+                }
+                if (ip.xRigh + vx >= dp.xRigh) {
+                    vx = dp.xRigh - ip.xRigh;
+                }
+                if (ip.yTop + vy <= dp.yTop) {
+                    vy = dp.yTop - ip.yTop;
+                }
+                if (ip.yBottom + vx >= dp.yBottom) {
+                    vy = dp.yBottom - ip.yBottom;
+                }
+                console.log(ip);
+                if (ip.xLeft + vx >= dp.xLeft && ip.xRigh + vx <= dp.xRigh && ip.yTop + vy >= dp.yTop && ip.yBottom + vy <= dp.yBottom) {
+                    $("#pic").css("top", (ip.yTop - dp.yTop + vy) + "px");
+                    $("#pic").css("left", (ip.xLeft - dp.xLeft + vx) + "px");
+                }
             }
         }
-
-        //鼠标按下才初始化
-        function initDrag(e) {
-            var oDragHandle = nn6 ? e.target : event.srcElement;
-            var topElement = "HTML";
-            while (oDragHandle.tagName != topElement && oDragHandle.className != "dragAble") {
-                oDragHandle = nn6 ? oDragHandle.parentNode : oDragHandle.parentElement;
-            }
-            if (oDragHandle.className == "dragAble") {
-                isdrag = true;
-                oDragObj = oDragHandle;
-                nTY = parseInt(oDragObj.style.top + 0);
-                y = nn6 ? e.clientY : event.clientY;
-                nTX = parseInt(oDragObj.style.left + 0);
-                x = nn6 ? e.clientX : event.clientX;
-                document.onmousemove = moveMouse;
-                return false;
-            }
-        }
-        document.onmousedown = initDrag;
-        document.onmouseup = new Function("isdrag=false");
+        document.getElementById("pic").onmousedown = initDrag;
+        document.getElementById("pic").onmousemove = mouseMove;
+        document.getElementById("pic").onmouseup = new Function("isdrag=false");
     </script>
 {{/section}}

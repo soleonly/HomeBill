@@ -103,7 +103,7 @@ router.post('/post', function (req, res, next) {
                 password: form.password
             })
             if (form.rememberMe == "on") {
-                res.cookie('rememberMe', rememberMeData, {maxAge: 900000, path: '/'});
+                res.cookie('rememberMe', rememberMeData, {maxAge: 9000000, path: '/'});
             } else {
                 //res.clearCookie('rememberMe', {expires: -1, path: '/login'});
                 res.clearCookie('rememberMe');

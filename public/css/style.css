@@ -391,7 +391,7 @@ label {font-weight: normal;}
 修改头像
 */
 .update_ava { width: 300px; min-height: 300px; margin: 10px auto; text-align: center; background-color: #f5f5f5; border: 1px solid transparent; border-radius: 4px; border-color: #ddd; }
-.update_ava1 { position: relative; cursor: move; width: 300px; min-height: 300px; margin: 10px auto; background-color: #f5f5f5; border: 1px solid transparent; border-radius: 4px; border-color: #ddd; }
+.update_ava1 { position: relative; cursor: move; width: 300px; min-height: 300px; margin: 10px auto; background-position: center; background-repeat: no-repeat;background-size:100%; border-radius: 4px; border-color: #ddd; }
 
 .account-tab>li>a {border-radius: 2px; padding: 6px 10px;}
 
@@ -620,4 +620,8 @@ label {font-weight: normal;}
 {
 	position: absolute;
 	cursor: move;
+	overflow: hidden;
+	filter:alpha(opacity=50);
+	-moz-opacity:0.5;
+	opacity:0.7;
 }
