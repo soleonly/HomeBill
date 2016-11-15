@@ -48,18 +48,29 @@
         var oImg = document.getElementById("pic");
         var oImgw = oImg.width;
         var oImgh = oImg.height;
+        //在固定div层拖动图片
+        var isdrag = false;
+        var pos1;
+        var dp = getDivPosition();
+        var ip = getImgPosition();
+        var x = 0;
+        var y = 0;
         function ImageChange(args) {
             if (args) {
-                if(zoom*zoomRitio<=zoomMax){
+                if(x>0){
+                    zoomMax = (300 - x) / 300;
+                }
+                console.info(zoomMax);
+                if (zoom * zoomRitio <= zoomMax) {
                     zoom *= zoomRitio;
-                }else{
+                } else {
                     zoom = zoomMax;
                 }
 
-            }else{
-                if(zoom/zoomRitio>=zoomMin){
+            } else {
+                if (zoom / zoomRitio >= zoomMin) {
                     zoom /= zoomRitio;
-                }else{
+                } else {
                     zoom = zoomMin;
                 }
             }
@@ -94,14 +105,8 @@
                 x: e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft,
                 y: e.clientY + document.body.scrollTop + document.documentElement.scrollTop
             };
-        };
-
-        //在固定div层拖动图片
-        var isdrag = false;
-        var y, x;
-        var pos1;
-        var dp = getDivPosition();
-        var ip;
+        }
+        ;
         function initDrag() {
             isdrag = true;
             pos1 = mousePos();
@@ -127,10 +132,11 @@
                 if (ip.yBottom + vx >= dp.yBottom) {
                     vy = dp.yBottom - ip.yBottom;
                 }
-                console.log(ip);
                 if (ip.xLeft + vx >= dp.xLeft && ip.xRigh + vx <= dp.xRigh && ip.yTop + vy >= dp.yTop && ip.yBottom + vy <= dp.yBottom) {
-                    $("#pic").css("top", (ip.yTop - dp.yTop + vy) + "px");
-                    $("#pic").css("left", (ip.xLeft - dp.xLeft + vx) + "px");
+                    x = ip.xLeft - dp.xLeft + vx;
+                    y = ip.yTop - dp.yTop + vy;
+                    $("#pic").css("left", (x) + "px");
+                    $("#pic").css("top", (y) + "px");
                 }
             }
         }
