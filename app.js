@@ -129,7 +129,7 @@ function getMenuData(res, next) {
 }
 app.use(function (req, res, next) {
     var reqUrl = req.url;
-    var reg=/\/login\s*|\/register\s*|\/user\/\w*Pass|\/utils\/*|\/logout\s*/;
+    var reg=/\/login\s*|\/register\s*|\/user\/\w*Pass|\/utils\/*|\/logout\s*|\/upload\s*/;
     if(!reg.test(reqUrl)){
         if(!req.session.user){
             res.redirect("/login");

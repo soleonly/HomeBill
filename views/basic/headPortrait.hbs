@@ -10,17 +10,13 @@
         <div id="message">
 
         </div>
-        <form class="form-horizontal" action="avatar" method="post">
-            <input type="hidden" id="x" name="x" value="">
-            <input type="hidden" id="y" name="y" value="">
-            <input type="hidden" id="width" name="width" value="">
-            <input type="hidden" id="height" name="height" value="">
+        <form class="form-horizontal" onsubmit="return false">
             <input type="hidden" id="path" name="path" value="">
-
             <div class="upload-btn">
                 <label>
                     <span>点击选择一张图片</span>
-                    <input id="upload_btn" type="file" name="file" accept="image/*" title="点击添加图片">
+                    <input id="upload" type="file" multiple name="file" class="form-control" required accept="image/*"
+                           data-url="/upload/upload" title="点击添加图片">
                 </label>
             </div>
             <div id="picDiv" class="update_ava1">
@@ -31,7 +27,7 @@
                 <div class="text-center">
                     <input id="btn1" type="button" value="放大" class="btn" onclick="ImageChange(true)"/>
                     <input id="btn2" type="button" value="缩小" class="btn" onclick="ImageChange(false)"/>
-                    <button type="submit" class="btn btn-primary">提交</button>
+                    <button id="submit" type="button" class="btn btn-primary">提交</button>
                 </div>
             </div>
         </form>
@@ -48,7 +44,7 @@
         var oImg = document.getElementById("pic");
         var oImgw = oImg.width;
         var oImgh = oImg.height;
-        //在固定div层拖动图片
+        var picPath = "/images/ava/default.png";
         var isdrag = false;
         var pos1;
         var dp = getDivPosition();
@@ -57,10 +53,9 @@
         var y = 0;
         function ImageChange(args) {
             if (args) {
-                if(x>0){
+                if (x > 0) {
                     zoomMax = (300 - x) / 300;
                 }
-                console.info(zoomMax);
                 if (zoom * zoomRitio <= zoomMax) {
                     zoom *= zoomRitio;
                 } else {
@@ -118,20 +113,6 @@
                 pos2 = mousePos();
                 var vx = pos2.x - pos1.x;
                 var vy = pos2.y - pos1.y;
-                //div的四个顶点坐标
-                ;
-                if (ip.xLeft + vx <= dp.xLeft) {
-                    vx = dp.xLeft - ip.xLeft;
-                }
-                if (ip.xRigh + vx >= dp.xRigh) {
-                    vx = dp.xRigh - ip.xRigh;
-                }
-                if (ip.yTop + vy <= dp.yTop) {
-                    vy = dp.yTop - ip.yTop;
-                }
-                if (ip.yBottom + vx >= dp.yBottom) {
-                    vy = dp.yBottom - ip.yBottom;
-                }
                 if (ip.xLeft + vx >= dp.xLeft && ip.xRigh + vx <= dp.xRigh && ip.yTop + vy >= dp.yTop && ip.yBottom + vy <= dp.yBottom) {
                     x = ip.xLeft - dp.xLeft + vx;
                     y = ip.yTop - dp.yTop + vy;
@@ -143,5 +124,39 @@
         document.getElementById("pic").onmousedown = initDrag;
         document.getElementById("pic").onmousemove = mouseMove;
         document.getElementById("pic").onmouseup = new Function("isdrag=false");
+
+        $(function () {
+            $("#upload").fileupload({
+                dataType: "json",
+                done: function (e, data) {
+                    $.each(data.result.files, function (index, file) {
+                        picPath = file.url.substring(file.url.indexOf("/uploads"));
+                        $("#picDiv").css("background-image", "url(" + picPath + ")");
+                    })
+                }
+            });
+            $("#submit").click(function(){
+                $.ajax("/user/headPortrait/post", {
+                            type: "post",
+                            data: {
+                                path: picPath,
+                                x: x,
+                                y: y,
+                                zoom: zoom,
+                            }, success: function (msg) {
+                                var msgDiv = $('#message');
+                                if (msg.success) {
+                                    msgDiv.html('<div class="alert alert-danger">' + msg.msg + '<a href="' + msg.url + '" target="_blank">点击跳转</a> </div>');
+                                    setTimeout(closeWindow,6000);
+                                } else {
+                                    msgDiv.removeClass('has-success').addClass('has-error');
+                                    msgDiv.html('<div class="alert alert-danger">' + msg.msg + '</div>');
+                                }
+                            }
+                        }
+                );
+                console.log(picPath + " " +x+" "+y+" "+zoom);
+            });
+        });
     </script>
 {{/section}}

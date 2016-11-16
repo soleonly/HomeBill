@@ -5,6 +5,7 @@ var Step = require('../../utils/Step');
 var credentials = require('../../credentials');
 var emailUtil = require("../../utils/emailUtil")(credentials);
 var md5 = require('../../utils/md5Util');
+var reqUtil = require('../../utils/reqUtil');
 var mongoose = require("mongoose");
 router.get('/findPass', function (req, res, next) {
     res.render('basic/findPass', {title: '找回密码', layout: "layout/logReg"});
@@ -389,5 +390,46 @@ function sendChangeEmail(form, control) {
 
 router.get('/headPortrait', function (req, res, next) {
     res.render('basic/headPortrait', {title: '修改头像', layout: "layout/contentCol1", _id: req.session.user._id});
+});
+router.post('/headPortrait/post', function (req, res, next) {
+    var form = reqUtil(req);
+    console.log(form.path);
+    if (form._id == null || form._id == '') {
+        errDesc = "修改邮箱错误,重新提交 ";
+        console.error(errDesc + err);
+        res.render('basic/changeEmail', {
+            title: '修改邮箱',
+            layout: "layout/logReg",
+            msg: errDesc,
+            _id: req.session.user._id
+        });
+    }
+    form._id = mongoose.Types.ObjectId(form._id);
+    form.valid = md5(form.validOrig);
+    form.username = req.session.user.username;
+    Step.Step(function (result, entire) {
+            var control = this;
+            updateUserEmail(req, User, form, control);
+        }, function (result, entire) {
+            var control = this;
+            if (result == 1) {
+                sendChangeEmail(form, control);
+            }
+        }, function (result, entire) {
+            console.log("changeEmail/post 过程描述 : " + entire);
+            var rst = {};
+            if (result == 1) {
+                var toAddress = form.email.replace(/(^\w+)@/gi, "http://mail@");
+                rst.success = true;
+                rst.msg = "请登录邮箱激活账号";
+                rst.url = toAddress;
+                res.json(rst);
+            } else {
+                rst.success = false;
+                rst.msg = entire[entire.length - 1];
+                res.json(rst);
+            }
+        }
+    );
 });
 module.exports = router;
