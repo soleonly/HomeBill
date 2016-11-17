@@ -6,6 +6,7 @@ var credentials = require('../../credentials');
 var emailUtil = require("../../utils/emailUtil")(credentials);
 var md5 = require('../../utils/md5Util');
 var reqUtil = require('../../utils/reqUtil');
+var images = require("images");
 var mongoose = require("mongoose");
 router.get('/findPass', function (req, res, next) {
     res.render('basic/findPass', {title: '找回密码', layout: "layout/logReg"});
@@ -393,23 +394,13 @@ router.get('/headPortrait', function (req, res, next) {
 });
 router.post('/headPortrait/post', function (req, res, next) {
     var form = reqUtil(req);
-    console.log(form.path);
-    if (form._id == null || form._id == '') {
-        errDesc = "修改邮箱错误,重新提交 ";
-        console.error(errDesc + err);
-        res.render('basic/changeEmail', {
-            title: '修改邮箱',
-            layout: "layout/logReg",
-            msg: errDesc,
-            _id: req.session.user._id
-        });
-    }
-    form._id = mongoose.Types.ObjectId(form._id);
-    form.valid = md5(form.validOrig);
+    form._id = mongoose.Types.ObjectId(req.session.user._id);
     form.username = req.session.user.username;
+    dealPortrait(form);
+    /*
     Step.Step(function (result, entire) {
             var control = this;
-            updateUserEmail(req, User, form, control);
+            dealPortrait(form, control);
         }, function (result, entire) {
             var control = this;
             if (result == 1) {
@@ -431,5 +422,14 @@ router.post('/headPortrait/post', function (req, res, next) {
             }
         }
     );
+    */
 });
+function dealPortrait(form,control){
+    images(form.path)                     //Load image from file
+        .size(400)                          //Geometric scaling the image to 400 pixels width
+        //等比缩放图像到400像素宽
+        .save(__dirname + "/../public/uploads/portrait/1.jpg", {               //Save the image to a file,whih quality 50
+            quality : 50                    //保存图片到文件,图片质量为50
+        });
+}
 module.exports = router;
