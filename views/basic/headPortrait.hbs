@@ -12,6 +12,7 @@
         </div>
         <form class="form-horizontal" onsubmit="return false">
             <input type="hidden" id="path" name="path" value="">
+            <input type="hidden" id="aaa" name="headPortrait" value="{{headPortrait}}">
             <div class="upload-btn">
                 <label>
                     <span>点击选择一张图片</span>
@@ -36,7 +37,7 @@
 
 {{#section 'jquery'}}
     <script type="text/javascript">
-        $("#picDiv").css("background-image", "url(/images/ava/default.png)");
+        $("#picDiv").css("background-image", "url(" + $("#aaa").val() + ")");
         var zoom = 1;
         var zoomMax = 1;
         var zoomMin = 0.6;
@@ -46,11 +47,13 @@
         var oImgh = oImg.height;
         var picPath = "/images/ava/default.png";
         var isdrag = false;
+        var uploaded = false;
         var pos1;
         var dp = getDivPosition();
         var ip = getImgPosition();
         var x = 0;
         var y = 0;
+        hiddenPic();
         function ImageChange(args) {
             if (args) {
                 if (x > 0) {
@@ -133,30 +136,63 @@
                         picPath = file.url.substring(file.url.indexOf("/uploads"));
                         $("#picDiv").css("background-image", "url(" + picPath + ")");
                     })
+                    showPic();
                 }
             });
-            $("#submit").click(function(){
-                $.ajax("/user/headPortrait/post", {
-                            type: "post",
-                            data: {
-                                path: picPath,
-                                x: x,
-                                y: y,
-                                zoom: zoom,
-                            }, success: function (msg) {
-                                var msgDiv = $('#message');
-                                if (msg.success) {
-                                    msgDiv.html('<div class="alert alert-danger">' + msg.msg + '<a href="' + msg.url + '" target="_blank">点击跳转</a> </div>');
-                                    setTimeout(closeWindow,6000);
-                                } else {
-                                    msgDiv.removeClass('has-success').addClass('has-error');
-                                    msgDiv.html('<div class="alert alert-danger">' + msg.msg + '</div>');
+            $("#submit").click(function () {
+                var msgDiv = $('#message');
+                if(uploaded==false){
+                    msgDiv.html('<div class="alert alert-success">请上传完图片再提交 </div>');
+                }else{
+                    $.ajax("/user/headPortrait/post", {
+                                type: "post",
+                                data: {
+                                    path: picPath,
+                                    x: x,
+                                    y: y,
+                                    zoom: zoom,
+                                },
+                                async: false,
+                                success: function (msg) {
+                                    if (msg.success) {
+                                        msgDiv.html('<div class="alert alert-success">' + msg.msg + ' </div>');
+                                        var n = new Date().getMilliseconds();
+                                        $(".headPortrait").attr("src", msg.headPortrait + "?" + n);
+                                        $("#picDiv").css("background-image", "url(" + msg.headPortrait + "?" + n + ")");
+                                        hiddenPic();
+                                    } else {
+                                        msgDiv.removeClass('has-success').addClass('has-error');
+                                        msgDiv.html('<div class="alert alert-danger">' + msg.msg + '</div>');
+                                    }
                                 }
                             }
-                        }
-                );
-                console.log(picPath + " " +x+" "+y+" "+zoom);
+                    );
+                }
             });
         });
+        function hiddenPic(){
+            $("#pic").hide();
+            uploaded = false;
+        }
+        function showPic(){
+            $("#pic").show();
+            uploaded = true;
+        }
+        var msgChecked = false;
+        function clearMsg(){
+            var msgDiv = $('#message');
+            msgDiv.removeClass('has-error').addClass('has-success');
+            msgDiv.html('');
+            msgChecked = false;
+        }
+
+        function checkMsg(){
+            var msgDiv = $('#message');
+            if((!msgChecked)&&msgDiv.html()!=""){
+                setTimeout(clearMsg,2000);
+                msgChecked = true;
+            }
+        }
+        setInterval(checkMsg,1000);
     </script>
 {{/section}}

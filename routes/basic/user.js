@@ -6,7 +6,8 @@ var credentials = require('../../credentials');
 var emailUtil = require("../../utils/emailUtil")(credentials);
 var md5 = require('../../utils/md5Util');
 var reqUtil = require('../../utils/reqUtil');
-var images = require("images");
+var imageUtil = require('../../utils/imageUtil');
+var fsUtil = require('../../utils/fsUtil');
 var mongoose = require("mongoose");
 router.get('/findPass', function (req, res, next) {
     res.render('basic/findPass', {title: '找回密码', layout: "layout/logReg"});
@@ -390,30 +391,31 @@ function sendChangeEmail(form, control) {
 }
 
 router.get('/headPortrait', function (req, res, next) {
-    res.render('basic/headPortrait', {title: '修改头像', layout: "layout/contentCol1", _id: req.session.user._id});
+    res.render('basic/headPortrait', {
+        title: '修改头像',
+        layout: "layout/contentCol1",
+        headPortrait: req.session.user.headPortrait
+    });
 });
 router.post('/headPortrait/post', function (req, res, next) {
     var form = reqUtil(req);
     form._id = mongoose.Types.ObjectId(req.session.user._id);
     form.username = req.session.user.username;
-    dealPortrait(form);
-    /*
     Step.Step(function (result, entire) {
             var control = this;
             dealPortrait(form, control);
         }, function (result, entire) {
             var control = this;
             if (result == 1) {
-                sendChangeEmail(form, control);
+                updateUserPortrait(User, form, control);
             }
         }, function (result, entire) {
-            console.log("changeEmail/post 过程描述 : " + entire);
+            console.log("headPortrait/post 过程描述 : " + entire);
             var rst = {};
             if (result == 1) {
-                var toAddress = form.email.replace(/(^\w+)@/gi, "http://mail@");
                 rst.success = true;
-                rst.msg = "请登录邮箱激活账号";
-                rst.url = toAddress;
+                rst.msg = "更新头像成功";
+                rst.headPortrait = "/uploads/" + form.username + "/headPortrait.jpg";
                 res.json(rst);
             } else {
                 rst.success = false;
@@ -422,14 +424,50 @@ router.post('/headPortrait/post', function (req, res, next) {
             }
         }
     );
-    */
+
 });
-function dealPortrait(form,control){
-    images(form.path)                     //Load image from file
-        .size(400)                          //Geometric scaling the image to 400 pixels width
-        //等比缩放图像到400像素宽
-        .save(__dirname + "/../public/uploads/portrait/1.jpg", {               //Save the image to a file,whih quality 50
-            quality : 50                    //保存图片到文件,图片质量为50
-        });
+function dealPortrait(form, control) {
+    var basePath = __dirname + "/../../public";
+    var userDir = __dirname + "/../../public/uploads/" + form.username;
+    var picSize = imageUtil.size(basePath + form.path);
+    var arrange = 0, x, y;
+    if (picSize.width > picSize.height) {
+        arrange = (picSize.width - picSize.height) / 2
+        x = form.x * picSize.width / 300;
+        y = form.y * picSize.width / 300 - arrange;
+    } else {
+        x = form.x * picSize.width / 300 - arrange;
+        y = form.y * picSize.width / 300;
+    }
+    var width = picSize.width * form.zoom;
+    fsUtil.mkDir(userDir);
+    var rst = imageUtil.deal(basePath + form.path, userDir + "/headPortrait.jpg", x, y, width, width, 300);
+    if (rst == true) {
+        var reg = /\/uploads\s*/;
+        if (reg.test(form.path)) {
+            var delFolder = basePath + form.path;
+            delFolder = delFolder.substring(0, delFolder.lastIndexOf("/"));
+            fsUtil.delDir(delFolder);
+        }
+        control.step(1);
+    } else {
+        var errDesc = "图片处理错误错误 ";
+        console.error(errDesc);
+        control.end(control.index + "." + errDesc);
+    }
+}
+function updateUserPortrait(UserModel, form, control) {
+    var errDesc = "";
+    var query = {_id: form._id};
+    var update = {headPortrait: "/uploads/" + form.username + "/headPortrait.jpg"};
+    var options = {upsert: true, new: true};
+    UserModel.findOneAndUpdate(query, update, options, function (err, doc) {
+        if (err) {
+            errDesc = "头像更新错误: ";
+            console.error(errDesc + err);
+            control.end(control.index + "." + errDesc);
+        }
+        control.step(1);
+    });
 }
 module.exports = router;
