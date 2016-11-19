@@ -9,10 +9,10 @@ router.use('/upload', function(req, res, next) {
   var now = Date.now();
   jqupload.fileHandler({
     uploadDir:function(){
-      return __dirname + "/../public/uploads/" + now;
+      return __dirname + "/../public/uploads/tmp/" + now;
     },
     uploadUrl:function(){
-      return "/uploads/" + now;
+      return "/uploads/tmp/" + now;
     }
   })(req,res,next);
 

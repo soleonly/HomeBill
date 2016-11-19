@@ -17,7 +17,7 @@
                 <label>
                     <span>点击选择一张图片</span>
                     <input id="upload" type="file" multiple name="file" class="form-control" required accept="image/*"
-                           data-url="/upload/upload" title="点击添加图片">
+                           data-url="/utils/upload" title="点击添加图片">
                 </label>
             </div>
             <div id="picDiv" class="update_ava1">
@@ -40,7 +40,7 @@
         $("#picDiv").css("background-image", "url(" + $("#aaa").val() + ")");
         var zoom = 1;
         var zoomMax = 1;
-        var zoomMin = 0.6;
+        var zoomMin = zoomMax*0.6;
         var zoomRitio = 1.1;
         var oImg = document.getElementById("pic");
         var oImgw = oImg.width;
@@ -54,6 +54,10 @@
         var x = 0;
         var y = 0;
         hiddenPic();
+        function initZoom(max){
+            zoomMax = max;
+            zoomMin = zoomMax*0.6;
+        }
         function ImageChange(args) {
             if (args) {
                 if (x > 0) {

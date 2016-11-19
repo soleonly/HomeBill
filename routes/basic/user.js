@@ -415,7 +415,7 @@ router.post('/headPortrait/post', function (req, res, next) {
             if (result == 1) {
                 rst.success = true;
                 rst.msg = "更新头像成功";
-                rst.headPortrait = "/uploads/" + form.username + "/headPortrait.jpg";
+                rst.headPortrait = "/uploads/headPortrait/" + form.username + ".jpg";
                 res.json(rst);
             } else {
                 rst.success = false;
@@ -428,7 +428,7 @@ router.post('/headPortrait/post', function (req, res, next) {
 });
 function dealPortrait(form, control) {
     var basePath = __dirname + "/../../public";
-    var userDir = __dirname + "/../../public/uploads/" + form.username;
+    var headPortraitDir = __dirname + "/../../public/uploads/headPortrait/";
     var picSize = imageUtil.size(basePath + form.path);
     var arrange = 0, x, y;
     if (picSize.width > picSize.height) {
@@ -440,15 +440,10 @@ function dealPortrait(form, control) {
         y = form.y * picSize.width / 300;
     }
     var width = picSize.width * form.zoom;
-    fsUtil.mkDir(userDir);
-    var rst = imageUtil.deal(basePath + form.path, userDir + "/headPortrait.jpg", x, y, width, width, 300);
+    fsUtil.mkDir(headPortraitDir);
+    var rst = imageUtil.deal(basePath + form.path, headPortraitDir +  form.username+".jpg", x, y, width, width, 300);
     if (rst == true) {
-        var reg = /\/uploads\s*/;
-        if (reg.test(form.path)) {
-            var delFolder = basePath + form.path;
-            delFolder = delFolder.substring(0, delFolder.lastIndexOf("/"));
-            fsUtil.delDir(delFolder);
-        }
+        fsUtil.delDir(basePath+"/uploads/tmp");
         control.step(1);
     } else {
         var errDesc = "图片处理错误错误 ";
@@ -459,7 +454,7 @@ function dealPortrait(form, control) {
 function updateUserPortrait(UserModel, form, control) {
     var errDesc = "";
     var query = {_id: form._id};
-    var update = {headPortrait: "/uploads/" + form.username + "/headPortrait.jpg"};
+    var update = {headPortrait: "/uploads/headPortrait/" + form.username + ".jpg"};
     var options = {upsert: true, new: true};
     UserModel.findOneAndUpdate(query, update, options, function (err, doc) {
         if (err) {
