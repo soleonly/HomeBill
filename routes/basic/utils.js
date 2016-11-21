@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var ccap = require("../../utils/captchaUtil");
+var imageUtil = require('../../utils/imageUtil');
+var reqUtil = require('../../utils/reqUtil');
 var fs = require("fs");
 var bodyParser = require('body-parser');
 var jqupload  = require('jquery-file-upload-middleware');
@@ -22,5 +24,11 @@ router.use('/upload', function(req, res, next) {
         }
     })(req,res,next);
 
+});
+router.post('/picInfo', function(req, res, next) {
+    var form = reqUtil(req);
+    var basePath = __dirname + "/../../public";
+    var picSize = imageUtil.size(basePath + form.path);
+    res.json(picSize);
 });
 module.exports = router;
