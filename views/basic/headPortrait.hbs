@@ -58,7 +58,7 @@
         function ImageChange(args) {
             if (args) {
                 if (x > 0) {
-                    zoomMax = (300 - x) / 300;
+                    zoomMax = ((300 - x -dx) / 300)>((300 - y -dy) / 300)?((300 - y -dy) / 300):((300 - x -dx) / 300);
                 }
                 if (zoom * zoomRitio <= zoomMax) {
                     zoom *= zoomRitio;
