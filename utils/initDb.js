@@ -28,9 +28,9 @@ promise.then(function(menus){
             var ms = [
                 {name:"主页",nav:"home",target:"",hrel:"/"},
                 {name:"文章",nav:"article",target:"",hrel:"/"},
-                {name:"视频",nav:"video",target:"",hrel:"/"},
-                {name:"问答",nav:"aq",target:"",hrel:"/"},
-                {name:"发现",nav:"find",target:"",hrel:"/"}
+                {name:"画廊",nav:"picture",target:"",hrel:"/"},
+                {name:"收支明细",nav:"money",target:"",hrel:"/"},
+                {name:"家庭设置",nav:"family",target:"",hrel:"/"}
             ];
             menuModel.collection.insert(ms,function(err,docs){
                 console.info("%d potatoes were successfully stored.", docs.length);
