@@ -1,5 +1,5 @@
 <script type="text/javascript" charset="utf-8" src="/vendors/ueditor/ueditor.config.js"></script>
-<script type="text/javascript" charset="utf-8" src="/vendors/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" charset="utf-8" src="/vendors/ueditor/ueditor.all.min.js"></script>
 <script type="text/javascript" src="/js/plugins.js"></script>
 <link rel='stylesheet' media='all' href='/css/plugins.css'/>
 <div class="panel panel-default">
@@ -8,31 +8,38 @@
     </div>
     <div class="panel-body">
         <div id="message"></div>
-        <form class="form-horizontal" action="/article/post" method="post" enctype="multipart/form-data">
+        <form class="form-horizontal" onsubmit="return false">
             <div class="form-group">
                 <label class="col-sm-2 control-label no-padding-right">标题</label>
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" name="title" maxlength="32" data-required >
+                    <input type="text" class="form-control" name="title" maxlength="32" data-required
+                           placeholder="标题" data-conditional="title" data-description="title"
+                           data-describedby="message">
                 </div>
             </div>
             <div class="form-group">
-                <label for="desc" class="col-sm-2 control-label no-padding-right">内容</label>
-                <input type="hidden" id="editor" name="editor" value=""/>
+                <label class="col-sm-2 control-label no-padding-right">内容</label>
+                <input type="hidden" id="content" name="content" value=""
+                       data-conditional="content" data-description="content"
+                       data-describedby="message"/>
                 <div class="col-sm-8">
-                    <textarea id="content" name="content"  rows="5" data-required data-describedby="message" data-description="content"></textarea>
+                    <textarea id="ueEdit" name="ueEdit" rows="5" data-required data-describedby="message"
+                              data-description="ueEdit"></textarea>
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-sm-2 control-label no-padding-right">标签</label>
                 <div class="col-sm-8">
-                    <input type="hidden" name="tags" id="fieldTags" value="123">
+                    <input type="hidden" name="tags" id="fieldTags" value=""
+                           placeholder="标签" data-conditional="tags" data-description="tags"
+                           data-describedby="message">
                     <ul id="tags"></ul>
                     <p class="help-block" style="font-size: 12px;">添加相关标签，用逗号或空格分隔 (最多4个).</p>
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-sm-2 control-label no-padding-right">访问权限</label>
-                <div class="col-sm-3">
+                <div class="col-sm-8">
                     <select class="form-control" name="privacy">
                         <option value="0">公开</option>
                         <option value="1">私密</option>
@@ -52,16 +59,89 @@
 </div>
 {{#section 'jquery'}}
     <script type="text/javascript">
-        var ue = UE.getEditor('content');
-        ue.addListener("blur",function(){
-            $("#editor").val(ue.getContent());
-        })
-        $('#content').on('valuechange', function (e, previous) {
-            alert($(this).val());
-        })
+        var ue = UE.getEditor('ueEdit');
+        ue.addListener("blur", function () {
+            $("#content").val(ue.getContent());
+            $("#content").keyup();
+        });
         $('#tags').tagit({
             singleField: true,
+            tagLimit: 4,
             singleFieldNode: $('#fieldTags')
         });
+        $(function () {
+            $('form').validate({
+                onKeyup: true,
+                onChange: true,
+                eachValidField: function () {
+                    $(this).closest('div').removeClass('has-error').addClass('has-success');
+                },
+                eachInvalidField: function () {
+                    $(this).closest('div').removeClass('has-success').addClass('has-error');
+                },
+                conditional: {
+                    title: function () {
+                        var l = $(this).val().length;
+                        return l > 0 && l <= 6;
+                    },
+                    content: function () {
+                        var l = ue.getContentTxt().length;
+                        return l > 0 && l <= 10;
+                    },
+                    tags: function () {
+                        var l = $(this).val().length;
+                        return l > 0;
+                    }
+                },
+                description: {
+                    title: {
+                        conditional: '<div class="alert alert-danger">标题字数在(0,32]之间</div>'
+                    },
+                    content: {
+                        conditional: '<div class="alert alert-danger">标题字数在(0,10000]之间</div>'
+                    },
+                    tags: {
+                        conditional: '<div class="alert alert-danger">标签不为空</div>'
+                    }
+                }
+            });
+            $("#submit").click(function () {
+                if (emailValid && emailValid) {
+                    findPass();
+                }
+            });
+        })
+        function findPass() {
+            $.ajax("/article/post/valid", {
+                type: "post",
+                data: {
+                    email: $("#email").val(),
+                    passpod: $("#passpod").val(),
+                }, success: function (msg) {
+                    if (msg.success) {
+                        $.ajax("/article/post/post", {
+                                    type: "post",
+                                    data: {
+                                        email: $("#email").val(),
+                                    }, success: function (msg) {
+                                        var msgDiv = $('#message');
+                                        if (msg.success) {
+                                            msgDiv.html('<div class="alert alert-danger">' + msg.msg + '<a href="' + msg.url + '" target="_blank">点击跳转</a> </div>');
+                                            setTimeout(closeWindow, 6000);
+                                        } else {
+                                            msgDiv.removeClass('has-success').addClass('has-error');
+                                            msgDiv.html('<div class="alert alert-danger">' + msg.msg + '</div>');
+                                        }
+                                    }
+                                }
+                        );
+                    } else {
+                        var msgDiv = $('#message');
+                        msgDiv.removeClass('has-success').addClass('has-error');
+                        msgDiv.html('<div class="alert alert-danger">' + msg.msg + '</div>');
+                    }
+                }
+            });
+        }
     </script>
 {{/section}}
